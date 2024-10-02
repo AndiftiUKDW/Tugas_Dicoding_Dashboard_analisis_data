@@ -123,7 +123,7 @@ with st.sidebar:
         label='Time Frame', min_value=min_date, max_value=max_date,
         value=[min_date,max_date]
     )
-st.write(str(end_date)+" 23:00:00")
+
 main_df = all_df[(all_df["order_approved_at"] >= str(start_date))&(all_df["order_approved_at"]<= str(end_date)+" 23:00:00")]
 bulanan_df = create_order_bulanan(main_df)
 category_df = create_category(main_df)
@@ -227,4 +227,3 @@ ax[2].set_title("By Spending", loc="center", fontsize=50)
 ax[2].tick_params(axis ='x', labelsize=25)
 ax[2].tick_params(axis='y', labelsize=30)
 st.pyplot(fig)
-st.dataframe(rfm_df)
