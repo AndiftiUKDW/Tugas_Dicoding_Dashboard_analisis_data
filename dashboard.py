@@ -49,7 +49,67 @@ def create_rfm(df):
     return rfm_df
 
 
-all_df = pd.read_csv("all_df.csv")
+customers_df = pd.read_csv("./Dataset/customers_dataset.csv")
+order_items_df = pd.read_csv("./Dataset/order_items_dataset.csv")
+order_payments_df = pd.read_csv("./Dataset/order_payments_dataset.csv")
+order_reviews_df = pd.read_csv("./Dataset/order_reviews_dataset.csv")
+orders_df = pd.read_csv("./Dataset/orders_dataset.csv")
+products_df = pd.read_csv("./Dataset/products_dataset.csv")
+translate_df = pd.read_csv("./Dataset/product_category_name_translation.csv")
+sellers_df = pd.read_csv("./Dataset/sellers_dataset.csv")
+order_items_df["shipping_limit_date"] = pd.to_datetime(order_items_df["shipping_limit_date"])
+kolom = ["order_approved_at","order_purchase_timestamp","order_delivered_carrier_date","order_delivered_customer_date","order_estimated_delivery_date"]
+for isi in kolom:
+    orders_df[isi] = pd.to_datetime(orders_df[isi])
+product_translated_df = pd.merge(
+    left = products_df,
+    right = translate_df,
+    how = "left",
+    left_on = "product_category_name",
+    right_on = "product_category_name"
+)
+all_order_df = pd.merge(
+    left=orders_df,
+    right=order_payments_df,
+    how="left",
+    left_on="order_id",
+    right_on="order_id",
+)
+all_order_df = pd.merge(
+    left=all_order_df,
+    right=order_items_df,
+    how="left",
+    left_on="order_id",
+    right_on="order_id",
+)
+all_order_df = pd.merge(
+    left=all_order_df,
+    right=order_reviews_df,
+    how="left",
+    left_on="order_id",
+    right_on="order_id",
+)
+order_product_df = pd.merge(
+    left=all_order_df,
+    right=product_translated_df,
+    how="left",
+    left_on="product_id",
+    right_on="product_id",
+)
+all_df = pd.merge(left=order_product_df,
+    right=customers_df,
+    how="left",
+    left_on="customer_id",
+    right_on="customer_id",
+    )
+
+
+
+columns = ["order_purchase_timestamp","order_approved_at","order_delivered_carrier_date","order_delivered_customer_date","order_estimated_delivery_date","shipping_limit_date"]
+for column in columns:
+    all_df[column] = pd.to_datetime(all_df[column])
+
+
 columns = ["order_purchase_timestamp","order_approved_at","order_delivered_carrier_date","order_delivered_customer_date","order_estimated_delivery_date","shipping_limit_date"]
 for column in columns:
     all_df[column] = pd.to_datetime(all_df[column])
